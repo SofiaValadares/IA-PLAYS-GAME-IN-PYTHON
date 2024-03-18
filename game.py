@@ -18,7 +18,7 @@ class Game:
         pygame.display.set_caption("Photon Game")
         self.clock = pygame.time.Clock()
         self.running = True
-        self.level = level_list[2]
+        self.level = level_list[0]
         self.ia = GameState(self.level)
         
 
