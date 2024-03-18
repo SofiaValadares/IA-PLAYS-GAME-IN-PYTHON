@@ -18,7 +18,7 @@ class Game:
         pygame.display.set_caption("Photon Game")
         self.clock = pygame.time.Clock()
         self.running = True
-        self.level = level_list[0]
+        self.level = level_list[2]
         self.ia = GameState(self.level)
         
 
@@ -36,21 +36,6 @@ class Game:
 
     def update(self):
         # Obtém a entrada do usuário para os fótons de origem e destino
-        if self.level.verify_goal():
-            next_level = self.level.number
-            if next_level == 3:
-                print("Fim de Jogo")
-                time.sleep(20)
-                exit()
-            else:
-                print("Proximo nivel")
-                time.sleep(5)
-                self.level = level_list[next_level]
-                self.ia.updade_state(self.level)
-                self.screen.fill(WHITE)  # Limpa a tela
-               
-                pygame.display.flip()
-
         moves = self.ia.apply_move()
         
         if moves != None:
@@ -92,6 +77,20 @@ class Game:
                 print("Imposivel colocar cor em photon de destino")
 
             # Atualiza a cor do fóton de destino com a cor do fóton de origem
+                
+        if self.level.verify_goal():
+            next_level = self.level.number
+            if next_level == 3:
+                print("Fim de Jogo")
+                time.sleep(20)
+                exit()
+            else:
+                print("Proximo nivel")
+                time.sleep(5)
+                self.level = level_list[next_level]
+                self.ia.updade_state(self.level)
+                self.screen.fill(WHITE)  # Limpa a tela
+                pygame.display.flip()
 
 
 
