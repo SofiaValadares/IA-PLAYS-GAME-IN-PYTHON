@@ -12,19 +12,16 @@ class GameState:
         self.level = level
     
     def get_p(self):
-        self.p = 0
-
-        while(self.level.board.photons[self.p].colors == [0, 0, 0]):
+        check = True
+        while self.level.board.photons[self.p].colors == [0, 0, 0] or self.is_goal_state():
             self.p += 1
 
             if self.p >= 18:
-                break
-
-            if self.is_goal_state():
-                self.p += 1
-
-            if self.p >= 18:
-                break
+                if check:
+                    self.p = 0
+                    check = False
+                else:
+                    break
 
     def get_goals(self):
         goals_possible = []

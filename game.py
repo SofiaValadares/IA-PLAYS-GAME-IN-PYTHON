@@ -92,7 +92,7 @@ class Game:
                 
             if self.level.verify_goal():
                 next_level = self.level.number
-                if next_level == 3:
+                if next_level == 21:
                     print("Fim de Jogo")
                     time.sleep(5)
                     exit()
