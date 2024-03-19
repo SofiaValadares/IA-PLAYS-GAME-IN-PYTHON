@@ -22,7 +22,7 @@ class Photon(pygame.sprite.Sprite):
         self.update_number()
 
     def copy(self):
-        return Photon(self.colors[:], self.boder, self.conected[:], self.number, self.position)
+        return Photon(self.boder, self.colors, self.number, self.conected)
 
     def get_position(self, position):
         self.rect = self.image.get_rect(center = position)
@@ -73,21 +73,21 @@ class Photon(pygame.sprite.Sprite):
         self.image.blit(text, text_rect)  # Desenha o texto no centro do círculo
 
     def posibility_move_to(self, photon2):
-        for i in range(3):
-            if (self.colors[i] == photon2.colors[i] or (self.colors[i] == 1 and i + 1 == photon2.boder)) and self.colors[i] != 0:
-                return False
-
-        return True 
-    
-    def move_to(self, photon2):
-        check_color = False
+        check = False
 
         if photon2.number in self.conected:
-            check_color = True
-            check_color = self.posibility_move_to(photon2)
+            check = True
 
-        else:
-            print("Photons precisam estar conectados por uma linha")
+        if check:
+            for i in range(3):
+                if (self.colors[i] == photon2.colors[i] or (self.colors[i] == 1 and i + 1 == photon2.boder)) and self.colors[i] != 0:
+                    check = False
+                    break
+
+        return check
+    
+    def move_to(self, photon2):
+        check_color = self.posibility_move_to(photon2)
 
         if check_color:
             for j in range(3):
@@ -116,20 +116,20 @@ class Photon(pygame.sprite.Sprite):
         return False
     
     def posibility_move_to_split(self, photon2, i):
-        if (self.colors[i] == photon2.colors[i] or (self.colors[i] == 1 and i + 1 == photon2.boder)) and self.colors[i] != 0:
-            return False
 
-        return True 
-    
-    def move_to_split(self, photon2, i):
-        check_color = False
+        check = False
 
         if photon2.number in self.conected:
-            check_color = True
-            check_color = self.posibility_move_to_split(photon2, i)
+            check = True
 
-        else:
-            print("Photons precisam estar conectados por uma linha")
+        if check:
+            if (self.colors[i] == photon2.colors[i] or (self.colors[i] == 1 and i + 1 == photon2.boder)) and self.colors[i] != 0:
+                check = False
+
+        return check
+    
+    def move_to_split(self, photon2, i):
+        check_color = self.posibility_move_to_split(photon2, i)
 
         if check_color:
             photon2.colors[i] = 1
