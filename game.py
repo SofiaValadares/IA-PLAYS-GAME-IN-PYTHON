@@ -87,20 +87,22 @@ class Game:
                 
                 else:
                     print("Inposivel mover photon para ai")
+
+        else:
                 
-        if self.level.verify_goal():
-            next_level = self.level.number
-            if next_level == 3:
-                print("Fim de Jogo")
-                time.sleep(20)
-                exit()
-            else:
-                print("Proximo nivel")
-                time.sleep(5)
-                self.level = level_list[next_level]
-                self.ia.updade_state(self.level)
-                self.screen.fill(WHITE)  # Limpa a tela
-                pygame.display.flip()
+            if self.level.verify_goal():
+                next_level = self.level.number
+                if next_level == 3:
+                    print("Fim de Jogo")
+                    time.sleep(5)
+                    exit()
+                else:
+                    print("Proximo nivel")
+                    time.sleep(3)
+                    self.level = level_list[next_level]
+                    self.ia.updade_state(self.level)
+                    self.screen.fill(WHITE)  # Limpa a tela
+                    pygame.display.flip()
 
 
 

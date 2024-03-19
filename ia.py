@@ -95,18 +95,6 @@ class GameState:
                 path = path_test
 
         return path
-
-    '''  
-    def apply_move(self):
-        path = self.less_move() 
-
-        if path is not None:
-            return [path[0].number, path[1].number]
-        
-        else:
-            return [self.p+1, 20]
-
-    '''
         
     def get_goals_split(self, i):
         goals_possible = []
@@ -194,7 +182,7 @@ class GameState:
             if path is not None:
                 return [self.p+1, 20 + frist_color, path[1].number]
             
-            return [30]
+            return None
 
     def is_goal_state(self):
         check_goal = False
