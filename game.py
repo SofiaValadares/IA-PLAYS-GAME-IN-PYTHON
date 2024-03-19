@@ -39,54 +39,54 @@ class Game:
         moves = self.ia.apply_move()
         
         if moves != None:
-            time.sleep(2)
+            time.sleep(1)
             print("Photon de origem (1-19): ", moves[0])
-            moves[0] = int(input())
             
             photon1 = self.level.board.photons[moves[0] - 1]
-            
-            time.sleep(2) 
-            print("Photon de destino (1-19): ", moves[1])
-            moves[1] = int(input())
-            
-            photon2 = self.level.board.photons[moves[1] - 1] 
 
-            '''
-            check_color = False
+            if photon1.possibility_to_split():
+                print("Deseja realizar o split? (Y/n) ", end="")
 
-            if moves[1] in photon1.conected:
-                check_color = True
-                check_color = photon1.posibility_move_to(photon2)
+                if moves[1] >= 20:
+                    print("Y")
 
-            else:
-                print("Photons precisam estar conectados por uma linha")
+                else:
+                    print("n")
 
-            if check_color:
-                for j in range(3):
-                    if photon1.colors[j] == 1:
-                        photon2.colors[j] = 1
-
-                    photon1.colors[j] = 0
-
-                photon2.update_color()
-                photon1.update_color()
-
-                if self.level.update_energy(1, self.screen) != True:
-                    exit()
-
-            else: 
-                print("Imposivel colocar cor em photon de destino")
-
-            # Atualiza a cor do fóton de destino com a cor do fóton de origem
-
-            '''
-            if photon1.move_to(photon2):
+            if moves[1] >= 20:
                 if self.level.update_energy(1, self.screen) != True:
                     print("Acabou a energia, vamos encerar o jogo")
                     exit()
+
+                color_split = moves[1] - 20
+                
+                time.sleep(1) 
+                print("Photon de destino (1-19): ", moves[2])
             
+                photon2 = self.level.board.photons[moves[2] - 1] 
+
+                if photon1.move_to_split(photon2, color_split):
+                    if self.level.update_energy(1, self.screen) != True:
+                        print("Acabou a energia, vamos encerar o jogo")
+                        exit()
+
+                else:
+                    print("Inposivel mover photon para ai")
+                    
+
             else:
-                print("Inposivel mover photon para ai")
+                time.sleep(1) 
+                print("Photon de destino (1-19): ", moves[1])
+                
+                photon2 = self.level.board.photons[moves[1] - 1] 
+
+                if photon1.move_to(photon2):
+                    if self.level.update_energy(1, self.screen) != True:
+                        print("Acabou a energia, vamos encerar o jogo")
+                        exit()
+                
+                else:
+                    print("Inposivel mover photon para ai")
                 
         if self.level.verify_goal():
             next_level = self.level.number

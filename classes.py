@@ -102,6 +102,45 @@ class Photon(pygame.sprite.Sprite):
             return True
         
         return False
+    
+    def possibility_to_split(self):
+        count_colors = 0
+
+        for color in self.colors:
+            if color == 1:
+                count_colors += 1
+
+        if count_colors > 1:
+            return True
+        
+        return False
+    
+    def posibility_move_to_split(self, photon2, i):
+        if (self.colors[i] == photon2.colors[i] or (self.colors[i] == 1 and i + 1 == photon2.boder)) and self.colors[i] != 0:
+            return False
+
+        return True 
+    
+    def move_to_split(self, photon2, i):
+        check_color = False
+
+        if photon2.number in self.conected:
+            check_color = True
+            check_color = self.posibility_move_to_split(photon2, i)
+
+        else:
+            print("Photons precisam estar conectados por uma linha")
+
+        if check_color:
+            photon2.colors[i] = 1
+            self.colors[i] = 0
+
+            photon2.update_color()
+            self.update_color()
+
+            return True
+        
+        return False
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
