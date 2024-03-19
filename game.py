@@ -40,17 +40,18 @@ class Game:
         
         if moves != None:
             time.sleep(2)
-            #photon1_index = moves[0].number
             print("Photon de origem (1-19): ", moves[0])
+            moves[0] = int(input())
             
             photon1 = self.level.board.photons[moves[0] - 1]
             
             time.sleep(2) 
-            #photon2_index = moves[1].number
             print("Photon de destino (1-19): ", moves[1])
+            moves[1] = int(input())
             
             photon2 = self.level.board.photons[moves[1] - 1] 
 
+            '''
             check_color = False
 
             if moves[1] in photon1.conected:
@@ -77,6 +78,15 @@ class Game:
                 print("Imposivel colocar cor em photon de destino")
 
             # Atualiza a cor do fóton de destino com a cor do fóton de origem
+
+            '''
+            if photon1.move_to(photon2):
+                if self.level.update_energy(1, self.screen) != True:
+                    print("Acabou a energia, vamos encerar o jogo")
+                    exit()
+            
+            else:
+                print("Inposivel mover photon para ai")
                 
         if self.level.verify_goal():
             next_level = self.level.number

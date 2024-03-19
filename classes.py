@@ -78,6 +78,30 @@ class Photon(pygame.sprite.Sprite):
                 return False
 
         return True 
+    
+    def move_to(self, photon2):
+        check_color = False
+
+        if photon2.number in self.conected:
+            check_color = True
+            check_color = self.posibility_move_to(photon2)
+
+        else:
+            print("Photons precisam estar conectados por uma linha")
+
+        if check_color:
+            for j in range(3):
+                if self.colors[j] == 1:
+                    photon2.colors[j] = 1
+
+                self.colors[j] = 0
+
+            photon2.update_color()
+            self.update_color()
+
+            return True
+        
+        return False
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
