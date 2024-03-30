@@ -44,7 +44,9 @@ This project, titled "IA Play Drops of the Light," is a game built as a part of 
 ## Game Description
 
 "Drops of the Light" is a game where we need move and mix the photons to match the goal pattern, without being out of energy.
+
 <img src="https://cdn.discordapp.com/attachments/780769781871411250/1223641331264393317/Captura_de_Tela_2024-03-30_as_15.33.39.png?ex=661a97cb&is=660822cb&hm=f2abfd3e779142e0a74804ac3ee6d6bf1a7a99ba8217a3352adb7c6e62d14d52&" width="400px;" alt="Game Img"/><br>
+
 Players can move photons between any two connected crystals on the lattice.
 Moving a photon from one crystal to another costs one unit of energy.
 
