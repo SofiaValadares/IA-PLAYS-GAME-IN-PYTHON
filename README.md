@@ -80,8 +80,3 @@ This project, titled "IA Play Drops of the Light," is a game built as a part of 
     python3 game.py
     ```
 
-## Contributing
-Contributions to the project are welcome. Feel free to fork the repository, make improvements, and create pull requests.
-
-## License
-This project is licensed under the [MIT License](LICENSE).
