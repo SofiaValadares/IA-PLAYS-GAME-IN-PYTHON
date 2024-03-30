@@ -40,7 +40,6 @@ This project, titled "IA Play Drops of the Light," is a game built as a part of 
     </td>
   </tr>
 </table>
-<br></br>
 
 ## Game Description
 
