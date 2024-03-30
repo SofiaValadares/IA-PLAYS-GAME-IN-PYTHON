@@ -232,5 +232,5 @@ level_list = [
     Level(1, board1, goal1, 9),
     Level(2, board2, goal2, 8),
     Level(3, board3, goal3, 20),
-    Level(21, board4, goal4, 8)
+    Level(4, board4, goal4, 8)
 ]

@@ -12,20 +12,48 @@ BLACK = (0, 0, 0)
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption("Photon Game")
+        pygame.display.set_caption("Drops of Light")
         self.clock = pygame.time.Clock()
         self.running = True
-        self.level = level_list[0]
-        self.ia = GameState(self.level)
         self.moves = None
         
 
     def run(self):
+        self.menu_active = True
         while self.running:
-            self.handle_events()
-            self.render()
-            self.update()
+            if self.menu_active:
+                self.menu()
+            else:
+                self.handle_events()
+                self.render()
+                self.update()
             self.clock.tick(60)
+
+    def menu(self):
+        self.screen.fill(WHITE)
+        font = pygame.font.Font(None, 36)
+        play_text = font.render("Jogar(p)", True, BLACK)
+        quit_text = font.render("Sair(q)", True, BLACK)
+        self.screen.blit(play_text, (SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 50))
+        self.screen.blit(quit_text, (SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 + 50))
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    self.menu_active = False
+                    self.select_level()
+                elif event.key == pygame.K_q:
+                    self.running = False
+
+    def select_level(self):
+        level = input("Escolha o nível: ")
+        self.level = level_list[int(level)-1]
+        self.ia = GameState(self.level)
+        self.screen.fill(WHITE)  # Clear the screen
+        self.menu_active = False
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -50,7 +78,7 @@ class Game:
                 
             if photon1.move_to(photon2, self.moves[1]):
                 if self.level.update_energy(1, self.screen) != True:
-                    print("Acabou a energia, vamos encerar o jogo")
+                    print("Acabou a energia, vamos encerrar o jogo")
                     exit()
                 
             else:
@@ -64,22 +92,10 @@ class Game:
             
                 
         else:
-            if self.level.verify_goal():
-                next_level = self.level.number
-                if next_level == 21:
-                    print("Fim de Jogo")
-                    time.sleep(5)
-                    exit()
-                else:
-                    print("Proximo nivel")
-                    time.sleep(3)
-                    self.level = level_list[next_level]
-                    self.ia.updade_state(self.level)
-                    self.screen.fill(WHITE)  # Limpa a tela
-                    pygame.display.flip()
-
-
-
+            if self.level is not None and self.level.verify_goal():
+                self.menu_active = True
+                self.level = None
+                self.ia = None
 
     def render(self):
         self.screen.fill(WHITE)

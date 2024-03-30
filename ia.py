@@ -16,7 +16,7 @@ class GameState:
                 self.goals_index.append(index)
 
 
-    # Verifica se mover o photon para certa posicao nos deixa mais perto do goal state
+    # Verifica se mover o photon para uma certa posicao nos deixa mais perto do goal state
     def close_to_goal(self, phothon, move_to):
         board = self.level.board.photons
         goal = self.level.goal.photons
@@ -37,7 +37,7 @@ class GameState:
         return close
 
 
-    #Busca entre os visinhos de goal se algum deles pode nos deixar mais perto do goal state
+    #Busca entre os vizinhos de goal se algum deles pode nos deixar mais perto do goal state
     def BreadthFirst(self):
         board = self.level.board.photons
 
