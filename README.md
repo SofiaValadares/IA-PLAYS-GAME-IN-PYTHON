@@ -12,7 +12,7 @@ This project, titled "IA Play Drops of the Light," is a game built as a part of 
       <a href="https://github.com/AlexSa1000">
         <img src="https://avatars.githubusercontent.com/u/56562013?v=4" width="100px;" alt="Foto Gabriel"/><br>
         <sub>
-          <b>Name</b>
+          <b>Diogo Alexandre Sá</b>
           <br>
           <b>email</b>
         </sub>
@@ -22,7 +22,7 @@ This project, titled "IA Play Drops of the Light," is a game built as a part of 
       <a href="https://github.com/Hmgc2002">
         <img src="https://avatars.githubusercontent.com/u/93448311?v=4" width="100px;" alt="Foto Guilherme"/><br>
         <sub>
-          <b>Name</b>
+          <b>Hugo Costa</b>
           <br>
           <b>email</b>
         </sub>
