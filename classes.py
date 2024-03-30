@@ -1,33 +1,36 @@
 import pygame
 import math
 
+
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 LINE_COLOR = (0, 0, 0)
+GRAY = (128, 128, 128)
+
+pygame.init()
 
 class Photon(pygame.sprite.Sprite):
-    def __init__(self,  boder, colors, number, conected):
+    def __init__(self, border, colors, connected):
         super().__init__()
         self.colors = colors  # Array para armazenar as cores (R, G, B)
-        self.boder = boder # Pode ser (C, R, G, B) = (0, 1, 2, 3)
-        self.conected = conected
-        self.number = number  # Número do fóton
+        self.border = border # Pode ser (C, R, G, B) = (0, 1, 2, 3)
+        self.connected = connected
         self.radius = 15
         self.font = pygame.font.Font(None, 24)
         self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)  # Superfície transparente
         self.rect = self.image.get_rect()
-        self.update_color()
-        self.update_number()
-
-    def copy(self):
-        return Photon(self.boder, self.colors, self.number, self.conected)
+        
 
     def get_position(self, position):
         self.rect = self.image.get_rect(center = position)
 
-    def update_color(self):
+    def copy(self):
+        new_photon = Photon(self.border, self.colors[:], self.connected)
+        return new_photon
+
+    def update_color(self, number):
         # Calcula a cor do fundo com base nas cores armazenadas
         red = self.colors[0]
         green = self.colors[1]
@@ -51,43 +54,51 @@ class Photon(pygame.sprite.Sprite):
         else:
             background_color = (128, 128, 128)  # Gray (sem cor)
 
-        if self.boder == 0:
-            boder_color = (0, 0, 0)  # Black
-        elif self.boder == 1:
-            boder_color = (150, 0, 0)  # Red
-        elif self.boder == 2:
-            boder_color = (0, 150, 0)  # Green
-        elif self.boder == 3:
-            boder_color = (0, 0, 150)  # Blue
+        if self.border == 0:
+            border_color = (0, 0, 0)  # Black
+        elif self.border == 1:
+            border_color = (150, 0, 0)  # Red
+        elif self.border == 2:
+            border_color = (0, 150, 0)  # Green
+        elif self.border == 3:
+            border_color = (0, 0, 150)  # Blue
 
         # Redesenha o círculo com a nova cor de fundo
         self.image.fill((0, 0, 0, 0))  # Limpa a superfície
         pygame.draw.circle(self.image, background_color, (self.radius, self.radius), self.radius)
-        pygame.draw.circle(self.image, boder_color, (self.radius, self.radius), self.radius, 4)  # Desenha o círculo preto
+        pygame.draw.circle(self.image, border_color, (self.radius, self.radius), self.radius, 4)  # Desenha o círculo preto
 
-        self.update_number()
+        self.update_number(number)
 
-    def update_number(self):
-        text = self.font.render(str(self.number), True, BLACK)
+    def update_number(self, number):
+        text = self.font.render(str(number), True, BLACK)
         text_rect = text.get_rect(center=(self.radius, self.radius))  # Posiciona o texto no centro do círculo
         self.image.blit(text, text_rect)  # Desenha o texto no centro do círculo
 
-    def posibility_move_to(self, photon2):
-        check = False
+    def connected_to(self, index):
+        if index in self.connected:
+            return True
+        
+        return False
+    
+    def colors_check(self, photon2):
+        for i in range(3):
+            if self.colors[i] == 1 and (photon2.colors[i] == 1 or i + 1 == photon2.border):
+                return False
+            
+        return True
+                 
 
-        if photon2.number in self.conected:
-            check = True
+    def posibility_move_to(self, photon2, index):
+        check = self.connected_to(index)
 
         if check:
-            for i in range(3):
-                if (self.colors[i] == photon2.colors[i] or (self.colors[i] == 1 and i + 1 == photon2.boder)) and self.colors[i] != 0:
-                    check = False
-                    break
+            check = self.colors_check(photon2)
 
         return check
     
-    def move_to(self, photon2):
-        check_color = self.posibility_move_to(photon2)
+    def move_to(self, photon2, index):
+        check_color = self.posibility_move_to(photon2, index)
 
         if check_color:
             for j in range(3):
@@ -96,54 +107,17 @@ class Photon(pygame.sprite.Sprite):
 
                 self.colors[j] = 0
 
-            photon2.update_color()
-            self.update_color()
-
-            return True
-        
-        return False
-    
-    def possibility_to_split(self):
-        count_colors = 0
-
-        for color in self.colors:
-            if color == 1:
-                count_colors += 1
-
-        if count_colors > 1:
-            return True
-        
-        return False
-    
-    def posibility_move_to_split(self, photon2, i):
-
-        check = False
-
-        if photon2.number in self.conected:
-            check = True
-
-        if check:
-            if (self.colors[i] == photon2.colors[i] or (self.colors[i] == 1 and i + 1 == photon2.boder)) and self.colors[i] != 0:
-                check = False
-
-        return check
-    
-    def move_to_split(self, photon2, i):
-        check_color = self.posibility_move_to_split(photon2, i)
-
-        if check_color:
-            photon2.colors[i] = 1
-            self.colors[i] = 0
-
-            photon2.update_color()
-            self.update_color()
+            photon2.update_color(index)
+            self.update_color(index)
 
             return True
         
         return False
 
-    def draw(self, surface):
+    def draw(self, surface, number):
         surface.blit(self.image, self.rect)
+
+        self.update_color(number)
 
 class Board:
     def __init__(self, photons):
@@ -156,9 +130,15 @@ class Board:
 
         self.screen_center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
+        self.font = pygame.font.Font(None, 24)
+
     def copy(self):
-        copied_photons = [photon.copy() for photon in self.photons]
-        return Board(copied_photons)
+        copy_photonts = {}
+
+        for index, photon in self.photons.items():
+            copy_photonts[index] = photon.copy()
+
+        return Board(copy_photonts)
     
     def calculate_vertices(self):
         vertices = []
@@ -199,11 +179,11 @@ class Board:
         return lines
 
     def draw_connections(self, surface):
-        for photon in self.photons:
+        for photon in self.photons.values():
             photon_position = photon.rect.center
 
-            for connected_photon_index in photon.conected:
-                connected_photon = self.photons[connected_photon_index - 1]  # Os índices começam em 1
+            for connected_photon_index in photon.connected:
+                connected_photon = self.photons[connected_photon_index]  # Os índices começam em 1
                 connected_photon_position = connected_photon.rect.center
 
                 pygame.draw.line(surface, LINE_COLOR, photon_position, connected_photon_position, 2)
@@ -211,7 +191,7 @@ class Board:
 
 
     def draw(self, surface):
-        photon_inx = 0
+        photon_inx = 1
 
         for line in self.calculate_lines_to_outside():
             self.photons[photon_inx].get_position((int(line[1][0]), int(line[1][1])))
@@ -231,11 +211,12 @@ class Board:
         self.photons[photon_inx].get_position(self.screen_center)
 
         self.draw_connections(surface)
-        for photon in self.photons:
-            photon.draw(surface)
+
+        for i, photon in self.photons.items():
+            photon.draw(surface, i)
 
     def draw_goal(self, surface):
-        photon_inx = 0
+        photon_inx = 1
 
         for line in self.calculate_lines_to_outside():
             self.photons[photon_inx].get_position((int(line[1][0]/3), int(line[1][1]/3)))
@@ -255,8 +236,9 @@ class Board:
         self.photons[photon_inx].get_position((130, 100))
 
         self.draw_connections(surface)
-        for photon in self.photons:
-            photon.draw(surface)
+
+        for i, photon in self.photons.items():
+            photon.draw(surface, i)
 
 
 class Level:
@@ -267,14 +249,13 @@ class Level:
         self.energy = energy
         self.font = pygame.font.Font(None, 24)
 
-
     def copy(self):
-        copied_board = self.board.copy()  # Suponha que a classe Board tenha um método copy()
-        copied_goal = self.goal.copy()  # Suponha que a classe Goal tenha um método copy()
-        return Level(self.number, copied_board, copied_goal, self.energy)
+        copy_board = self.board.copy()
+        return Level(self.number, copy_board, self.goal, self.energy)
+
         
     def verify_goal(self):
-        for i in range(19):
+        for i, _ in self.goal.photons.items():
             if self.board.photons[i].colors != self.goal.photons[i].colors:
                 return False
             
@@ -287,11 +268,6 @@ class Level:
         text_rect = text.get_rect(topleft=(700, 20))
         surface.blit(text, text_rect)
 
-        '''
-        if self.energy == 0 and self.verify_goal != True:
-            print("Perdeu level, vamos encerar o programa")
-            return False
-        '''
         return True
         
     def draw(self, surface):

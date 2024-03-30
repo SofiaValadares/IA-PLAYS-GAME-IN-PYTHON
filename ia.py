@@ -1,197 +1,203 @@
-import pygame
-from classes import Photon, Board, Level
-from levellist import photons_empty, level_list
-from collections import deque
-
+import heapq
+    
 class GameState:
     def __init__(self, level):
-        self.level = level
-        self.p = 0
+        self.level = None
+        self.goals_index = []
+        
+        self.updade_state(level)
 
     def updade_state(self, level):
         self.level = level
-    
-    def get_p(self):
-        check = True
-        while self.level.board.photons[self.p].colors == [0, 0, 0] or self.is_goal_state():
-            self.p += 1
+        self.goals_index = []
 
-            if self.p >= 18:
-                if check:
-                    self.p = 0
-                    check = False
-                else:
-                    break
+        for index, photon in self.level.goal.photons.items():
+            if photon.colors != [0, 0, 0]:
+                self.goals_index.append(index)
 
-    def get_goals(self):
-        goals_possible = []
-        p_colors = self.level.board.photons[self.p].colors
-        for photon in self.level.goal.photons:
-            check = True
-            if photon.colors != [0, 0, 0] and self.level.board.photons[photon.number - 1].colors != photon.colors:
-                for i in range(3):
-                    if photon.colors[i] == 0 and p_colors[i] == 1:
-                        check = False
-                        break
-            else:
-                check = False
-            
-            if check:
-                goals_possible.append(photon)
 
-        return goals_possible
-    
-    def path_move(self, goal):
-        start = self.level.board.photons[self.p]
-        photons = self.level.board.photons
+    # Verifica se mover o photon para certa posicao nos deixa mais perto do goal state
+    def close_to_goal(self, phothon, move_to):
+        board = self.level.board.photons
+        goal = self.level.goal.photons
 
-        parent = {}
-        # Fila para armazenar os fótons a serem visitados
-        queue = deque([start])
-        # Marca o fóton de partida como visitado
-        visited = set()
-        visited.add(start.number)
+        if move_to not in self.goals_index:
+            return False
 
-        while queue:
-            current = queue.popleft()
-            
-            # Se o fóton atual for o destino, reconstrua o caminho
-            if current.number == goal.number:
-                path = []
-                while current is not None:
-                    path.append(current)
-                    current = parent.get(current.number)
-                    
-                return list(reversed(path))
-            
-            # Para cada vizinho do fóton atual
-            for photon in photons:
-                if photon.number == current.number:
-                    for neighbor_id in photon.conected:
-                        # Se o vizinho ainda não foi visitado
-                        if neighbor_id not in visited and photon.posibility_move_to(photons[neighbor_id-1]):
-                            # Marque-o como visitado, adicione-o à fila e defina seu pai como o fóton atual
-                            visited.add(neighbor_id)
-                            queue.append(photons[neighbor_id-1])
-                            parent[neighbor_id] = current
-        
-        # Se não for possível alcançar o destino a partir do ponto de partida
+        close = False
+
+        for j in range(3):
+            if board[phothon].colors[j] == 1 and goal[move_to].colors[j] == 1:
+                close = True
+                
+
+            elif board[phothon].colors[j] == 1 and goal[move_to].colors[j] == 0:
+                return False
+
+        return close
+
+
+    #Busca entre os visinhos de goal se algum deles pode nos deixar mais perto do goal state
+    def BreadthFirst(self):
+        board = self.level.board.photons
+
+        for index, photon in board.items():
+            if photon.colors != [0, 0, 0] and index not in self.goals_index: # Se o photon esta vazio não faz a verificação
+
+                for neighbors in photon.connected:
+                    if neighbors in self.goals_index: # Se o vizinho não é um local de goal state não continua
+                        if photon.posibility_move_to(board[neighbors], neighbors):
+                            if self.close_to_goal(index, neighbors):
+                                return [index, neighbors]
+                            
+        # Caso não ache goal nos vizinhos retorna None
         return None
 
-    def less_move(self):
-        self.get_p()
-        goals_possible = self.get_goals()
-        path = None
+    def UniformCust(self, start, goal, board = None):
         
-        for goal in goals_possible:
-            path_test = self.path_move(goal)
+        if board is None:
+            board = self.level.board.photons 
 
-            if path == None:
-                path = path_test
-            elif len(path) > len(path_test):
-                path = path_test
+        frontier = []
+        heapq.heappush(frontier, (0, start))
+        came_from = {}
+        cost_so_far = {start: 0}
 
-        return path
-        
-    def get_goals_split(self, i):
-        goals_possible = []
-        p_colors = self.level.board.photons[self.p].colors[i]
-        for photon in self.level.goal.photons:
-            check = True
-            if photon.colors != [0, 0, 0] and self.level.board.photons[photon.number - 1].colors[i] != photon.colors[i]:
-                    if photon.colors[i] == 0 and p_colors == 1:
-                        check = False
-            else:
-                check = False
-            
-            if check:
-                goals_possible.append(photon)
+        while frontier:
+            _, current = heapq.heappop(frontier)
 
-        return goals_possible
-
-    def path_move_split(self, goal, i):
-        start = self.level.board.photons[self.p]
-        photons = self.level.board.photons
-
-        parent = {}
-        # Fila para armazenar os fótons a serem visitados
-        queue = deque([start])
-        # Marca o fóton de partida como visitado
-        visited = set()
-        visited.add(start.number)
-
-        while queue:
-            current = queue.popleft()
-            
-            # Se o fóton atual for o destino, reconstrua o caminho
-            if current.number == goal.number:
-                path = []
-                while current is not None:
+            if current == goal:
+                path = [current]
+                while current in came_from:
+                    current = came_from[current]
                     path.append(current)
-                    current = parent.get(current.number)
-                    
-                return list(reversed(path))
-            
-            # Para cada vizinho do fóton atual
-            for photon in photons:
-                if photon.number == current.number:
-                    for neighbor_id in photon.conected:
-                        # Se o vizinho ainda não foi visitado
-                        if neighbor_id not in visited and photon.posibility_move_to_split(photons[neighbor_id-1], i):
-                            # Marque-o como visitado, adicione-o à fila e defina seu pai como o fóton atual
-                            visited.add(neighbor_id)
-                            queue.append(photons[neighbor_id-1])
-                            parent[neighbor_id] = current
-        
-        # Se não for possível alcançar o destino a partir do ponto de partida
-        return None
-    
-    def less_move_split(self, i):
-        self.get_p()
-        goals_possible = self.get_goals_split(i)
-        path = None
-        
-        for goal in goals_possible:
-            path_test = self.path_move_split(goal, i)
+                path.reverse()
+                return path
 
-            if path == None:
-                path = path_test
-            elif len(path) > len(path_test):
-                path = path_test
+            for next_node in board[current].connected:
+                if next_node == goal or next_node not in self.goals_index:
+                    if board[current].connected_to(next_node) and board[start].colors_check(board[next_node]):
+                        new_cost = cost_so_far[current] + 1  
+                        if next_node not in cost_so_far or new_cost < cost_so_far[next_node]:
+                            cost_so_far[next_node] = new_cost
+                            priority = new_cost 
+                            heapq.heappush(frontier, (priority, next_node))
+                            came_from[next_node] = current
 
-        return path
-    
-    def apply_move(self):
-        path = self.less_move() 
 
-        if path is not None:
-            return [path[0].number, path[1].number]
-        
-        else:
-            frist_color = 0
-            for i in range(3):
-                if self.level.board.photons[self.p].colors[i] == 1:
-                    frist_color = i
-                    break
+        return None 
 
-            path = self.less_move_split(frist_color)
-
-            if path is not None:
-                return [self.p+1, 20 + frist_color, path[1].number]
-            
-            return None
-
-    def is_goal_state(self):
-        check_goal = False
+    def next_possible(self, start, goal):
+        level_copy = self.level.copy()
+        board_copy = level_copy.board.photons
 
         for i in range(3):
-            if self.level.board.photons[self.p].colors[i] == self.level.goal.photons[self.p].colors[i] and self.level.board.photons[self.p].colors[i] == 1:
-                check_goal = True
-            elif self.level.board.photons[self.p].colors[i] != self.level.goal.photons[self.p].colors[i] and self.level.board.photons[self.p].colors[i] == 1:
-                check_goal = False
-                break
+            if board_copy[start].colors[i] == 1:
+                board_copy[goal].colors[i] = 1
+
+            board_copy[start].colors[i] = 0
+         
+        for i, photon in board_copy.items():
+            if photon.colors != [0, 0, 0] and i not in self.goals_index:
+                for j in self.goals_index:
+                    if photon.colors_check(board_copy[j]):
+                        if self.close_to_goal(i, j):
+                            path = self.UniformCust(i, j, board_copy)
+
+                            if path is not None:
+                                return True
+
+        if level_copy.verify_goal():
+            return True
+        
+        return False
+
+
+    def UniformCust2(self):
+        board = self.level.board.photons 
+        move = None
+
+        for index, photon in board.items():
+            if photon.colors != [0, 0, 0] and index not in self.goals_index:
+                for goal in self.goals_index:
+                    if self.close_to_goal(index, goal):
+                        new_move = self.UniformCust(index, goal)
+                         
+                        if new_move is not None:
+                            if self.next_possible(index, goal):
+                                if move is None:
+                                    move = new_move
+                                elif len(move) >= len(new_move):
+                                    move = new_move
+
+        if move is not None:
+            return move
+        
+        return None
+    
+    def heuristic_estimate(self, index):
+        goal = self.level.board.photons[index]
+        save_colors = goal.colors
+        goal.colors = [0, 0, 0]
+        board = self.level.goal.photons
+        cust = 0
+
+        for i, photon in board.items():
+            if i not in self.goals_index:
+                if photon.colors_check(goal):
+                    if self.close_to_goal(i, index):
+                        path = self.UniformCust(i, index)
+
+                        if path is not None:
+                            cust_new = len(path) - 1
+
+                            if cust == 0 or cust > cust_new:
+                                cust = cust_new
+
+                    
+        goal.colors = save_colors
+        return cust
+                    
+    
+    def AStar(self):
+        board = self.level.board.photons
+
+        cust_less = None
+        move = None
+
+        for index1 in self.goals_index:
+            for index2 in self.goals_index:
+                if index1 != index2:
+                    if self.close_to_goal(index1, index2):
+                        if board[index1].colors_check(board[index2]):
+                            move_test = self.UniformCust(index1, index2)
+
+                            if move_test is not None:
+                                next_cust = self.heuristic_estimate(index1)
+
+                                if next_cust != 0:
+                                    cust = len(move_test) - 1 + next_cust
+                                    if move is None:
+                                        move = move_test
+                                        cust_less = cust
+                                    elif cust_less > cust:
+                                        move = move_test
+                                        cust_less = cust     
+
+        return move
+    
+    def apply_move(self):
+        move = self.BreadthFirst()
+        
+
+        if move is None:
+            move = self.UniformCust2()
+
+        if self.level.verify_goal() == False and move is None:
+            move = self.AStar()
             
-        return check_goal
+
+        return move
 
 
 

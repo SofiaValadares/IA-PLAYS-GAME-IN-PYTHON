@@ -1,7 +1,4 @@
-import math
 import pygame
-import sys
-from classes import Photon, Board, Level
 from levellist import level_list
 
 from ia import GameState
@@ -20,6 +17,7 @@ class Game:
         self.running = True
         self.level = level_list[0]
         self.ia = GameState(self.level)
+        self.moves = None
         
 
     def run(self):
@@ -36,60 +34,36 @@ class Game:
 
     def update(self):
         # Obtém a entrada do usuário para os fótons de origem e destino
-        moves = self.ia.apply_move()
+        if self.moves is None:
+            self.moves = self.ia.apply_move()
         
-        if moves != None:
+        if self.moves != None:
             time.sleep(1)
-            print("Photon de origem (1-19): ", moves[0])
-            
-            photon1 = self.level.board.photons[moves[0] - 1]
+            print("Photon de origem (1-19): ", self.moves[0])
+                
+            photon1 = self.level.board.photons[self.moves[0]]
 
-            if photon1.possibility_to_split():
-                print("Deseja realizar o split? (Y/n) ", end="")
-
-                if moves[1] >= 20:
-                    print("Y")
-
-                else:
-                    print("n")
-
-            if moves[1] >= 20:
+            time.sleep(1) 
+            print("Photon de destino (1-19): ", self.moves[1])
+                
+            photon2 = self.level.board.photons[self.moves[1]] 
+                
+            if photon1.move_to(photon2, self.moves[1]):
                 if self.level.update_energy(1, self.screen) != True:
                     print("Acabou a energia, vamos encerar o jogo")
                     exit()
-
-                color_split = moves[1] - 20
                 
-                time.sleep(1) 
-                print("Photon de destino (1-19): ", moves[2])
-            
-                photon2 = self.level.board.photons[moves[2] - 1] 
-
-                if photon1.move_to_split(photon2, color_split):
-                    if self.level.update_energy(1, self.screen) != True:
-                        print("Acabou a energia, vamos encerar o jogo")
-                        exit()
-
-                else:
-                    print("Inposivel mover photon para ai")
-                    
-
             else:
-                time.sleep(1) 
-                print("Photon de destino (1-19): ", moves[1])
-                
-                photon2 = self.level.board.photons[moves[1] - 1] 
+                print("Inposivel mover photon para ai")
 
-                if photon1.move_to(photon2):
-                    if self.level.update_energy(1, self.screen) != True:
-                        print("Acabou a energia, vamos encerar o jogo")
-                        exit()
-                
-                else:
-                    print("Inposivel mover photon para ai")
+            print()
+            del self.moves[0]
 
+            if len(self.moves) <= 1:
+                self.moves = None
+            
+                
         else:
-                
             if self.level.verify_goal():
                 next_level = self.level.number
                 if next_level == 21:
@@ -103,6 +77,7 @@ class Game:
                     self.ia.updade_state(self.level)
                     self.screen.fill(WHITE)  # Limpa a tela
                     pygame.display.flip()
+
 
 
 
