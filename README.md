@@ -95,13 +95,13 @@ To start a new game, press "p" in the game window. Afterward, select a level fro
   ![Level 1](https://cdn.discordapp.com/attachments/780769781871411250/1224274234591678505/Level1.png?ex=661ce53b&is=660a703b&hm=e69ee97910e43406b98194854b3c0c959c957b64956ddc7964b9db00fb5645ad&)  
 
 - **Level 2:**
-  ![Level 2](https://cdn.discordapp.com/attachments/780769781871411250/1224274234948456448/Level2.png?ex=661ce53b&is=660a703b&hm=3ce0146b70995f05bd32e0e348a83cf8edf8de0dbed0d49dc04f67c6829dbd18&)  
+  ![Level 2](https://cdn.discordapp.com/attachments/780769781871411250/1224274234948456448/Level2.png?ex=661ce53b&is=660a703b&hm=3ce0146b70995f05bd32e0e348a83cf8edf8de0dbed0d49dc04f67c6829dbd18&)
 
 - **Level 3:**
-  ![Level 3](https://cdn.discordapp.com/attachments/780769781871411250/1224274235288190986/Level3.png?ex=661ce53b&is=660a703b&hm=3b745d3e73e3d914124d45673a61ccf087b19f81f6fd94ca4b6240c9140ed24e&)  
+  ![Level 3](https://cdn.discordapp.com/attachments/780769781871411250/1224274235627671582/Level4.png?ex=661ce53b&is=660a703b&hm=e4ee7835a7c7984508b444ddd8b38a474975b2ce0dee2d45a9e0f42f3f624d3f&)  
 
 - **Level 4:**
-  ![Level 4](https://cdn.discordapp.com/attachments/780769781871411250/1224274235627671582/Level4.png?ex=661ce53b&is=660a703b&hm=e4ee7835a7c7984508b444ddd8b38a474975b2ce0dee2d45a9e0f42f3f624d3f&)  
+  ![Level 4](https://cdn.discordapp.com/attachments/780769781871411250/1224274235288190986/Level3.png?ex=661ce53b&is=660a703b&hm=3b745d3e73e3d914124d45673a61ccf087b19f81f6fd94ca4b6240c9140ed24e&)  
 
 Once the level is completed, you'll return to the main menu screen, where you can start a new game or quit the game.
 
