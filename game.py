@@ -66,7 +66,6 @@ class Game:
 
     def update(self):
         # Obtém a entrada do usuário para os fótons de origem e destino
-        time.sleep(20)
         if self.moves is None:
             self.moves = self.ia.apply_move()
         
