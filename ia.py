@@ -285,11 +285,18 @@ class GameState:
         Returns:
             list or None: The next move as a list of indices [start, goal], or None if no move is found.
         """
-        move = self.BreadthFirst()
+        move1 = self.BreadthFirst()
+
+        move2 = self.UniformCust2()
   
 
-        if move is None:
-            move = self.UniformCust2()
+        move = None
+
+        if move1 == move2:
+            move = move1
+
+        else:
+            move = move2
         
 
         if self.level.verify_goal() == False and move is None:
