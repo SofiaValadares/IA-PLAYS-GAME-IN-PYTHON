@@ -1,3 +1,47 @@
+"""
+This file contains the definition of different boards and their corresponding goals.
+Each board is represented by a dictionary of photons, where the keys are the photon IDs and the values are instances of the Photon class.
+The Photon class represents a photon with its color and connected photon IDs.
+
+Example:
+    photons_empty = {
+        1: Photon(0, [0, 0, 0], [16, 10, 11]),
+        2: Photon(0, [0, 0, 0], [11, 17, 12]),
+        ...
+    }
+
+    board1 = Board(photons={
+        1: Photon(0, [0, 0, 0], [16, 10, 11]),
+        2: Photon(0, [0, 0, 0], [11, 17, 12]),
+        ...
+    })
+
+    goal1 = Board(photons={
+        1: Photon(0, [0, 0, 0], [16, 10, 11]),
+        2: Photon(0, [0, 0, 0], [11, 17, 12]),
+        ...
+    })
+
+    ...
+
+The Board class represents a board with its photons. It has a constructor that takes a dictionary of photons as input.
+
+Example:
+    board1 = Board(photons={
+        1: Photon(0, [0, 0, 0], [16, 10, 11]),
+        2: Photon(0, [0, 0, 0], [11, 17, 12]),
+        ...
+    })
+
+    goal1 = Board(photons={
+        1: Photon(0, [0, 0, 0], [16, 10, 11]),
+        2: Photon(0, [0, 0, 0], [11, 17, 12]),
+        ...
+    })
+
+    ...
+
+"""
 import pygame
 from classes import Photon, Board, Level
 

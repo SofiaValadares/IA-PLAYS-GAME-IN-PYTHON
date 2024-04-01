@@ -10,15 +10,30 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 class Game:
+    """
+    Represents the game logic and functionality.
+
+    Attributes:
+    - screen: The game screen.
+    - clock: The game clock.
+    - running: A boolean indicating if the game is running.
+    - moves: A list of moves made by the player.
+    """
+
     def __init__(self):
+        """
+        Initializes the Game object.
+        """
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Drops of Light")
         self.clock = pygame.time.Clock()
         self.running = True
         self.moves = None
-        
 
     def run(self):
+        """
+        Runs the game loop.
+        """
         self.menu_active = True
         while self.running:
             if self.menu_active:
@@ -30,6 +45,9 @@ class Game:
             self.clock.tick(60)
 
     def menu(self):
+        """
+        Displays the game menu.
+        """
         self.screen.fill(WHITE)
         font = pygame.font.Font(None, 36)
         play_text = font.render("Jogar(p)", True, BLACK)
@@ -49,6 +67,9 @@ class Game:
                     self.running = False
 
     def select_level(self):
+        """
+        Allows the player to select a level.
+        """
         level = input("Escolha o nível: ")
 
         while level not in ['1', '2', '3', '4']:
@@ -60,13 +81,19 @@ class Game:
         self.menu_active = False
 
     def handle_events(self):
+        """
+        Handles game events.
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
 
     def update(self):
+        """
+        Updates the game state.
+        """
         # Obtém a entrada do usuário para os fótons de origem e destino
-        time.sleep(20)
+        time.sleep(0.5)
         if self.moves is None:
             self.moves = self.ia.apply_move()
         
@@ -103,6 +130,9 @@ class Game:
                 self.ia = None
 
     def render(self):
+        """
+        Renders the game screen.
+        """
         self.screen.fill(WHITE)
         self.level.board.draw(self.screen) 
         self.level.goal.draw_goal(self.screen)

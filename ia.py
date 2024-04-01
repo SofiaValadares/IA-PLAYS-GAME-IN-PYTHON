@@ -1,13 +1,45 @@
 import heapq
     
 class GameState:
+    """
+    Represents the state of the game.
+
+    Attributes:
+        level (None or Level): The current level of the game.
+        goals_index (list): The indices of the goal states.
+
+    Methods:
+        __init__(self, level): Initializes the GameState object.
+        update_state(self, level): Updates the state of the game.
+        close_to_goal(self, photon, move_to): Checks if moving the photon to a certain position brings it closer to the goal state.
+        BreadthFirst(self): Performs a breadth-first search to find the next move.
+        UniformCust(self, start, goal, board=None): Performs a uniform cost search to find the path from the start to the goal.
+        next_possible(self, start, goal): Checks if there is a possible next move from the start to the goal.
+        UniformCust2(self): Performs a modified uniform cost search to find the next move.
+        heuristic_estimate(self, index): Estimates the cost to reach the goal state from a certain index.
+        AStar(self): Performs an A* search to find the next move.
+        apply_move(self): Applies the next move to the game.
+    """
+
     def __init__(self, level):
+        """
+        Initializes the GameState object.
+
+        Args:
+            level (Level): The current level of the game.
+        """
         self.level = None
         self.goals_index = []
         
-        self.updade_state(level)
+        self.update_state(level)
 
-    def updade_state(self, level):
+    def update_state(self, level):
+        """
+        Updates the state of the game.
+
+        Args:
+            level (Level): The current level of the game.
+        """
         self.level = level
         self.goals_index = []
 
@@ -15,9 +47,17 @@ class GameState:
             if photon.colors != [0, 0, 0]:
                 self.goals_index.append(index)
 
+    def close_to_goal(self, photon, move_to):
+        """
+        Checks if moving the photon to a certain position brings it closer to the goal state.
 
-    # Verifica se mover o photon para uma certa posicao nos deixa mais perto do goal state
-    def close_to_goal(self, phothon, move_to):
+        Args:
+            photon (int): The index of the photon.
+            move_to (int): The index of the position to move the photon to.
+
+        Returns:
+            bool: True if moving the photon to the position brings it closer to the goal state, False otherwise.
+        """
         board = self.level.board.photons
         goal = self.level.goal.photons
 
@@ -27,34 +67,44 @@ class GameState:
         close = False
 
         for j in range(3):
-            if board[phothon].colors[j] == 1 and goal[move_to].colors[j] == 1:
+            if board[photon].colors[j] == 1 and goal[move_to].colors[j] == 1:
                 close = True
-                
-
-            elif board[phothon].colors[j] == 1 and goal[move_to].colors[j] == 0:
+            elif board[photon].colors[j] == 1 and goal[move_to].colors[j] == 0:
                 return False
 
         return close
 
-
-    #Busca entre os vizinhos de goal se algum deles pode nos deixar mais perto do goal state
     def BreadthFirst(self):
+        """
+        Performs a breadth-first search to find the next move.
+
+        Returns:
+            list or None: The next move as a list of indices [start, goal], or None if no move is found.
+        """
         board = self.level.board.photons
 
         for index, photon in board.items():
-            if photon.colors != [0, 0, 0] and index not in self.goals_index: # Se o photon esta vazio não faz a verificação
-
+            if photon.colors != [0, 0, 0] and index not in self.goals_index:
                 for neighbors in photon.connected:
-                    if neighbors in self.goals_index: # Se o vizinho não é um local de goal state não continua
+                    if neighbors in self.goals_index:
                         if photon.posibility_move_to(board[neighbors], neighbors):
                             if self.close_to_goal(index, neighbors):
                                 return [index, neighbors]
                             
-        # Caso não ache goal nos vizinhos retorna None
         return None
 
-    def UniformCust(self, start, goal, board = None):
-        
+    def UniformCust(self, start, goal, board=None):
+        """
+        Performs a uniform cost search to find the path from the start to the goal.
+
+        Args:
+            start (int): The index of the start position.
+            goal (int): The index of the goal position.
+            board (dict): The board state. Defaults to None.
+
+        Returns:
+            list or None: The path from the start to the goal as a list of indices, or None if no path is found.
+        """
         if board is None:
             board = self.level.board.photons 
 
@@ -84,10 +134,19 @@ class GameState:
                             heapq.heappush(frontier, (priority, next_node))
                             came_from[next_node] = current
 
-
         return None 
 
     def next_possible(self, start, goal):
+        """
+        Checks if there is a possible next move from the start to the goal.
+
+        Args:
+            start (int): The index of the start position.
+            goal (int): The index of the goal position.
+
+        Returns:
+            bool: True if there is a possible next move, False otherwise.
+        """
         level_copy = self.level.copy()
         board_copy = level_copy.board.photons
 
@@ -112,8 +171,13 @@ class GameState:
         
         return False
 
-
     def UniformCust2(self):
+        """
+        Performs a modified uniform cost search to find the next move.
+
+        Returns:
+            list or None: The next move as a list of indices [start, goal], or None if no move is found.
+        """
         board = self.level.board.photons 
         move = None
 
@@ -136,6 +200,15 @@ class GameState:
         return None
     
     def heuristic_estimate(self, index):
+        """
+        Estimates the cost to reach the goal state from a certain index.
+
+        Args:
+            index (int): The index of the goal state.
+
+        Returns:
+            int: The estimated cost to reach the goal state from the index.
+        """
         goal = self.level.board.photons[index]
         save_colors = goal.colors
         goal.colors = [0, 0, 0]
@@ -154,12 +227,16 @@ class GameState:
                             if cust == 0 or cust > cust_new:
                                 cust = cust_new
 
-                    
         goal.colors = save_colors
         return cust
-                    
     
     def AStar(self):
+        """
+        Performs an A* search to find the next move.
+
+        Returns:
+            list or None: The next move as a list of indices [start, goal], or None if no move is found.
+        """
         board = self.level.board.photons
 
         cust_less = None
@@ -187,23 +264,18 @@ class GameState:
         return move
     
     def apply_move(self):
+        """
+        Applies the next move to the game.
+
+        Returns:
+            list or None: The next move as a list of indices [start, goal], or None if no move is found.
+        """
         move = self.BreadthFirst()
-        
 
         if move is None:
             move = self.UniformCust2()
 
         if self.level.verify_goal() == False and move is None:
             move = self.AStar()
-            
 
         return move
-
-
-
-
-
-
-
-        
-

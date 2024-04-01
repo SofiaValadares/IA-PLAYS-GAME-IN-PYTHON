@@ -120,6 +120,28 @@ class Photon(pygame.sprite.Sprite):
         self.update_color(number)
 
 class Board:
+    """
+    Represents a game board.
+
+    Attributes:
+    - photons (dict): A dictionary of photons on the board.
+    - size (int): The size of the board.
+    - tilt_angle (float): The tilt angle of the board in degrees.
+    - vertices (list): The vertices of the board polygon.
+    - center (tuple): The center point of the board polygon.
+    - screen_center (tuple): The center point of the screen.
+    - font (pygame.font.Font): The font used for rendering text.
+
+    Methods:
+    - copy(): Creates a copy of the board.
+    - calculate_vertices(): Calculates the vertices of the board polygon.
+    - calculate_center(): Calculates the center point of the board polygon.
+    - calculate_lines_to_outside(): Calculates the lines from the center of the board polygon to the outside.
+    - draw_connections(surface): Draws connections between photons on the board.
+    - draw(surface): Draws the board and photons on the surface.
+    - draw_goal(surface): Draws the goal state of the board on the surface.
+    """
+
     def __init__(self, photons):
         self.photons = photons
 
@@ -133,6 +155,12 @@ class Board:
         self.font = pygame.font.Font(None, 24)
 
     def copy(self):
+        """
+        Creates a copy of the board.
+
+        Returns:
+        - Board: A new instance of the Board class with the same photons as the original board.
+        """
         copy_photonts = {}
 
         for index, photon in self.photons.items():
@@ -141,6 +169,12 @@ class Board:
         return Board(copy_photonts)
     
     def calculate_vertices(self):
+        """
+        Calculates the vertices of the board polygon.
+
+        Returns:
+        - list: A list of tuples representing the coordinates of the vertices.
+        """
         vertices = []
         angle_step = 2 * math.pi / 6  # Dividindo o círculo em 6 partes iguais
 
@@ -154,13 +188,24 @@ class Board:
         return vertices
 
     def calculate_center(self):
+        """
+        Calculates the center point of the board polygon.
+
+        Returns:
+        - tuple: A tuple representing the coordinates of the center point.
+        """
         # Calcula o ponto central do polígono
         center_x = sum(vertex[0] for vertex in self.vertices) / len(self.vertices)
         center_y = sum(vertex[1] for vertex in self.vertices) / len(self.vertices)
         return (center_x, center_y)
 
     def calculate_lines_to_outside(self):
-        # Calcula as linhas que vão do centro do polígono para fora do polígono
+        """
+        Calculates the lines from the center of the board polygon to the outside.
+
+        Returns:
+        - list: A list of tuples representing the start and end points of the lines.
+        """
         lines = []
         for i in range(len(self.vertices)):
             p1 = self.vertices[i]
@@ -179,6 +224,12 @@ class Board:
         return lines
 
     def draw_connections(self, surface):
+        """
+        Draws connections between photons on the board.
+
+        Parameters:
+        - surface (pygame.Surface): The surface to draw on.
+        """
         for photon in self.photons.values():
             photon_position = photon.rect.center
 
@@ -188,9 +239,13 @@ class Board:
 
                 pygame.draw.line(surface, LINE_COLOR, photon_position, connected_photon_position, 2)
 
-
-
     def draw(self, surface):
+        """
+        Draws the board and photons on the surface.
+
+        Parameters:
+        - surface (pygame.Surface): The surface to draw on.
+        """
         photon_inx = 1
 
         for line in self.calculate_lines_to_outside():
@@ -216,6 +271,12 @@ class Board:
             photon.draw(surface, i)
 
     def draw_goal(self, surface):
+        """
+        Draws the goal state of the board on the surface.
+
+        Parameters:
+        - surface (pygame.Surface): The surface to draw on.
+        """
         photon_inx = 1
 
         for line in self.calculate_lines_to_outside():
