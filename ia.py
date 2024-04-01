@@ -1,4 +1,5 @@
 import heapq
+from collections import deque
     
 class GameState:
     """
@@ -30,6 +31,7 @@ class GameState:
         """
         self.level = None
         self.goals_index = []
+        self.nodes_acessed = 0
         
         self.update_state(level)
 
@@ -73,25 +75,73 @@ class GameState:
                 return False
 
         return close
-
-    def BreadthFirst(self):
+    
+    def next_possible(self, start, goal):
         """
-        Performs a breadth-first search to find the next move.
+        Checks if there is a possible next move from the start to the goal.
+
+        Args:
+            start (int): The index of the start position.
+            goal (int): The index of the goal position.
 
         Returns:
-            list or None: The next move as a list of indices [start, goal], or None if no move is found.
+            bool: True if there is a possible next move, False otherwise.
         """
+        level_copy = self.level.copy()
+        board_copy = level_copy.board.photons
+
+        for i in range(3):
+            if board_copy[start].colors[i] == 1:
+                board_copy[goal].colors[i] = 1
+
+            board_copy[start].colors[i] = 0
+         
+        for i, photon in board_copy.items():
+            if photon.colors != [0, 0, 0] and i not in self.goals_index:
+                for j in self.goals_index:
+                    if photon.colors_check(board_copy[j]):
+                        if self.close_to_goal(i, j):
+                            return True
+
+        if level_copy.verify_goal():
+            return True
+        
+        return False
+    
+    def BreadthFirst(self):
+        """
+            Performs a breadth-first search to find the next move.
+
+            Returns:
+                list or None: The next move as a list of indices [start, goal], or None if no move is found.
+        """
+        
         board = self.level.board.photons
 
-        for index, photon in board.items():
-            if photon.colors != [0, 0, 0] and index not in self.goals_index:
-                for neighbors in photon.connected:
-                    if neighbors in self.goals_index:
-                        if photon.posibility_move_to(board[neighbors], neighbors):
-                            if self.close_to_goal(index, neighbors):
-                                return [index, neighbors]
-                            
+        for start, photon in board.items():
+            if photon.colors != [0, 0, 0] and start not in self.goals_index:
+                for end in self.goals_index:
+                    if photon.colors_check(board[end]):
+                        if self.close_to_goal(start, end):
+
+                            visited = set()
+                            queue = deque([(start, [start])])
+
+                            while queue:
+                                current, path = queue.popleft()
+
+                                if current == end:
+                                    if self.next_possible(start, end):
+                                        return path
+                                
+                                visited.add(current)
+
+                                for neighbor in board[current].connected:
+                                    if neighbor not in visited:
+                                        queue.append((neighbor, path + [neighbor]))
+                                        visited.add(neighbor)
         return None
+
 
     def UniformCust(self, start, goal, board=None):
         """
@@ -135,41 +185,6 @@ class GameState:
                             came_from[next_node] = current
 
         return None 
-
-    def next_possible(self, start, goal):
-        """
-        Checks if there is a possible next move from the start to the goal.
-
-        Args:
-            start (int): The index of the start position.
-            goal (int): The index of the goal position.
-
-        Returns:
-            bool: True if there is a possible next move, False otherwise.
-        """
-        level_copy = self.level.copy()
-        board_copy = level_copy.board.photons
-
-        for i in range(3):
-            if board_copy[start].colors[i] == 1:
-                board_copy[goal].colors[i] = 1
-
-            board_copy[start].colors[i] = 0
-         
-        for i, photon in board_copy.items():
-            if photon.colors != [0, 0, 0] and i not in self.goals_index:
-                for j in self.goals_index:
-                    if photon.colors_check(board_copy[j]):
-                        if self.close_to_goal(i, j):
-                            path = self.UniformCust(i, j, board_copy)
-
-                            if path is not None:
-                                return True
-
-        if level_copy.verify_goal():
-            return True
-        
-        return False
 
     def UniformCust2(self):
         """
@@ -271,9 +286,11 @@ class GameState:
             list or None: The next move as a list of indices [start, goal], or None if no move is found.
         """
         move = self.BreadthFirst()
+  
 
         if move is None:
             move = self.UniformCust2()
+        
 
         if self.level.verify_goal() == False and move is None:
             move = self.AStar()
