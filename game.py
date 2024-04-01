@@ -50,7 +50,11 @@ class Game:
 
     def select_level(self):
         level = input("Escolha o nível: ")
-        self.level = level_list[int(level)-1]
+
+        while level not in ['1', '2', '3', '4']:
+            level = input("Escolha um nível valido: ")
+
+        self.level = level_list[int(level)-1].copy()
         self.ia = GameState(self.level)
         self.screen.fill(WHITE)  # Clear the screen
         self.menu_active = False
@@ -62,6 +66,7 @@ class Game:
 
     def update(self):
         # Obtém a entrada do usuário para os fótons de origem e destino
+        time.sleep(20)
         if self.moves is None:
             self.moves = self.ia.apply_move()
         
